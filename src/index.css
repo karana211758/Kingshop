@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Noto Sans Thai", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Noto Sans Thai", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: #060913;
+    color: #f1f5f9;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: #060913;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 18% -8%, rgba(29, 78, 216, 0.14), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 88% 8%, rgba(148, 163, 184, 0.08), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 100%, rgba(29, 78, 216, 0.07), transparent 65%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+}
+
+/* Faint 2% SVG film-grain overlay to eliminate dark gradient banding */
+.obsidian-noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Frosted Glass + Specular Silver Borders */
+.glass-surface {
+  background: rgba(13, 19, 33, 0.62);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 20px 40px -24px rgba(2, 6, 23, 0.75);
+}
+
+.glass-surface-elevated {
+  background: rgba(15, 23, 42, 0.76);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(226, 232, 240, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 24px 48px -20px rgba(2, 6, 23, 0.85);
+}
+
+.glass-specular-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-specular-interactive::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  background: radial-gradient(
+    420px circle at var(--mouse-x, 50%) var(--mouse-y, 0%),
+    rgba(226, 232, 240, 0.11),
+    rgba(59, 130, 246, 0.06) 35%,
+    transparent 65%
+  );
+}
+
+.glass-specular-interactive:hover::before {
+  opacity: 1;
+}
+
+.glass-specular-interactive:hover {
+  border-color: rgba(226, 232, 240, 0.24);
+}
+
+.font-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060913;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.38);
+}

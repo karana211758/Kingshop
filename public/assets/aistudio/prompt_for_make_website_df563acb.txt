@@ -1,0 +1,139 @@
+Act as a Senior Full-Stack Engineer, UI/UX Design Systems Architect, and Application Security Engineer. Build a complete, production-ready e-commerce web application for a Roblox game item store named **KING CAMERA SHOP** (selling Camera Tower Defense units), modeled after modern Thai automated game-store layouts (clean navbar with Home, Top-Up, Shop/Cart, Profile, and footer with Terms, Privacy Policy, and Cookie Settings).
+
+### 1. Tech Stack
+- **Frontend:** Next.js (App Router) with TypeScript, Tailwind CSS, Framer Motion, `lucide-react` icons, React Hook Form + Zod validation, and client/server i18n support.
+- **Backend:** Next.js Route Handlers (or Node.js/Express REST API) with strict server-side validation.
+- **Database:** PostgreSQL with Prisma ORM (must support ACID transactions and row-level locking).
+
+### 2. Visual Design System — Obsidian Glassmorphism + Bento Grid + Specular Silver Minimalism
+Engineer a sleek, ultra-clean dark UI inspired by precision software interfaces (Linear / WindUI / modern frosted dark glass) with strictly **no emojis** and **no generic glowing neon clutter**:
+
+- **Surface & Depth Hierarchy:**
+  - **Base Canvas:** Deep Obsidian Navy (`#060913`) layered with subtle, low-opacity ambient radial mesh lighting (deep cobalt `#1D4ED8` at 12% opacity and cold titanium silver `#94A3B8` at 8% opacity) plus a faint `2%` SVG film-grain noise overlay to eliminate gradient banding.
+  - **Frosted Glass Cards:** Translucent dark slate (`rgba(13, 19, 33, 0.62)`) with `backdrop-filter: blur(20px) saturate(140%)`.
+  - **Specular Silver Borders:** Razor-thin `1px` borders (`rgba(226, 232, 240, 0.12)`) combined with a subtle top-edge inner highlight (`inset 0 1px 0 rgba(255, 255, 255, 0.14)`) to create a realistic machined-glass and brushed-silver finish.
+- **Color Tokens:**
+  - Primary Accent: Electric Cobalt (`#3B82F6`) with soft hover sheen (`#60A5FA`).
+  - Secondary / Metallic Highlight: Brushed Silver (`#E2E8F0`) and Cool Steel (`#94A3B8`).
+  - Status Tokens: Emerald (`#10B981` Completed/Delivered), Amber (`#F59E0B` Pending/Review), Crimson (`#EF4444` Failed/Refunded).
+- **Bento Grid Architecture:**
+  - Structure `/profile`, the Hero section, and Admin metrics using asymmetric **Bento Grid** modules (e.g., wide Balance & Quick Top-Up tile, compact Total Topped Up / Total Spent stat tiles, Account Security status tile, and full-width tabbed History panel below).
+- **Typography & Precision Numerals:**
+  - Pair `Plus Jakarta Sans` (English) + `Noto Sans Thai` (Thai) for balanced bilingual readability.
+  - Use `JetBrains Mono` with `font-variant-numeric: tabular-nums` for all Wallet Balances, THB prices, Order IDs, countdown timers, and timestamps so digits align cleanly and never shift.
+- **Micro-Interactions, Iconography & Mobile Ergonomics:**
+  - Use sharp `1.5px`-stroke vector icons from `lucide-react` exclusively (zero emojis anywhere in the app).
+  - Subtle cursor-following specular border glow on interactive product and channel cards, smooth Framer Motion transitions between steps in the 5-step Top-Up wizard, tactile button press feedback (`active:scale-[0.98]`), and frosted skeleton loaders for async data.
+  - **Global Navigation & Footer:**
+    - Desktop Top Glass Navbar: **KING CAMERA SHOP** wordmark, links (`Home`, `Top-Up`, `Shop / Cart`, `Profile`), persistent **Live Balance Pill** (`0.00 ฿`), **EN / TH Language Toggle**, and Auth/Account menu.
+    - Mobile Ergonomics: Compact sticky top bar (Logo, Balance Pill, EN/TH toggle) + frosted floating bottom navigation dock (`Home`, `Shop`, `Top-Up`, `Profile`).
+    - Footer: Copyright for KING CAMERA SHOP, Terms of Service, Privacy Policy, and Cookie Settings.
+
+### 3. Full Bilingual Translation System (EN / TH)
+- Implement a complete **English (`EN`) and Thai (`TH`)** language switcher in the navigation bar (persisted via cookies/user preference across SSR and reloads).
+- Translate **100% of UI text**, including navigation, buttons, form labels, placeholders, validation errors, order/transaction statuses, profile tabs, and the 5-step top-up wizard:
+  - Example mappings: `Home / หน้าหลัก`, `Top-Up / เติมเงิน`, `Cart / ตะกร้าสินค้า`, `Profile / โปรไฟล์`, `Payment channels / ช่องทางการชำระเงิน`, `Follow the steps to top up / ทำตามขั้นตอนเพื่อเติมเงิน`, `Top-up summary / สรุปการเติมเงิน`, `Purchase History / ประวัติการซื้อ`, `Activity History / ประวัติการใช้งาน`.
+- Store structured dictionaries in `/locales/en.json` and `/locales/th.json` with a clean `useTranslation()` hook and server-side helper.
+
+### 4. Authentication System (No Phone Number Required)
+Remove all phone number fields from user sign-up and sign-in. Support **Username and Email only**:
+
+**A. Sign In (Existing Account)**
+- Single flexible identifier input accepting **Username or Email** (server normalizes email to lowercase and queries matching unique column).
+- **Password** input with show/hide visibility toggle.
+- Anti-bot challenge (Cloudflare Turnstile / hCaptcha) before submission.
+- Generic error messages on failure ("Invalid credentials" / "ข้อมูลเข้าสู่ระบบไม่ถูกต้อง") to prevent user enumeration.
+
+**B. Create Account (Registration)**
+- **Username** (alphanumeric/underscores, 3–20 chars, unique).
+- **Email** (valid email format, normalized lowercase, unique).
+- **Password** (minimum 8 characters, enforcing uppercase, lowercase, number, and symbol, with live strength meter).
+- **Confirm Password ("Make sure password")** with real-time match validation both client-side and server-side before creating the account.
+
+### 5. Security & Anti-Hacking Protection
+Build defense-in-depth protections against account takeovers, brute force, and balance exploits:
+- **Password Security:** Hash all passwords with **Argon2id** (or bcrypt cost >= 12). Never log or return password hashes.
+- **Session Management:** Store sessions in `HttpOnly`, `Secure`, `SameSite=Strict` cookies using short-lived access tokens + rotating refresh tokens stored hashed in the database. Include an "Active Sessions / Log Out All Devices" button on `/profile`.
+- **Brute-Force & Bot Defense:** Enforce IP-based and account-based rate limiting (max 5 failed login attempts per 15 minutes with exponential lockout) on `/login`, `/register`, and `/topup` endpoints.
+- **Web Attack Prevention:**
+  - Parameterized Prisma queries exclusively to block SQL Injection.
+  - Strict Zod input sanitization plus security headers: Content Security Policy (CSP), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.
+  - CSRF protection on all state-changing endpoints.
+- **Anti-Race-Condition & Anti-Tampering:**
+  - Never trust prices, totals, or balances sent from the frontend; compute all amounts server-side.
+  - Wrap every top-up credit and purchase in a PostgreSQL interactive transaction with row-level locking (`SELECT ... FOR UPDATE`) to block double-spend and parallel-request exploits.
+  - Log immutable security audit events (user ID, masked IP, user agent, action, timestamp) for all auth and financial actions.
+
+### 6. Top-Up Page (`/topup`) — 5-Step "Payment channels" Wizard
+Build a two-column frosted glass guided top-up interface matching this exact flow and layout:
+
+**Header & Horizontal 5-Step Progress Bar:**
+- Title: **Payment channels** | Subtitle: **Follow the steps to top up**
+- Numbered horizontal glass stepper showing active, completed, and upcoming steps:
+  - **1. Channel** -> **2. Amount** -> **3. Payment info** -> **4. Confirm** -> **5. Done**
+
+**Right Column — Sticky Glass "Top-up summary" Card (always visible & updates live):**
+- Title: **Top-up summary**
+- Rows displaying:
+  - **Amount:** (e.g., `150.00 ฿` or `—` before entry)
+  - **Channel:** (e.g., `TrueMoney Wallet (Gift Voucher)` or `TrueMoney Wallet (QR Code)`)
+  - **Amount to transfer:** (highlighted total in monospace THB)
+
+**Left Column — Interactive Step Panels:**
+- **Step 1: Channel**
+  - Selectable Bento glass cards with specular active borders:
+    1. **TrueMoney Wallet — Gift Voucher (ซองอั่งเปา)** (Instant automatic credit)
+    2. **TrueMoney Wallet / PromptPay — QR Code** (Scan & verify via Slip API or Payment Gateway webhook)
+- **Step 2: Amount**
+  - Heading: **Amount to top up**
+  - Subtext: **Enter any amount you plan to transfer.**
+  - Numeric input labeled **Amount (THB)** with placeholder `Enter amount, e.g. 150` and fixed `฿` currency indicator.
+  - Quick-pick section labeled **Or pick a quick amount** with a clean responsive button grid containing these exact presets:
+    - `50฿`, `100฿`, `200฿`, `300฿`, `500฿`, `1,000฿`, `2,000฿`, `5,000฿`
+  - *(Note: For Gift Voucher channel, clearly note that the credited amount always matches the exact verified baht inside the redeemed voucher so users never lose money even if the estimate differs.)*
+- **Step 3: Payment info**
+  - **If Gift Voucher (ซองอั่งเปา) selected:** Input field for TrueMoney voucher URL (`https://gift.truemoney.com/campaign/?v=...`) with live format validation and short guide on creating a 1-person voucher link.
+  - **If QR Code selected:** Backend generates a dynamic **EMVCo PromptPay / TrueMoney QR Code** locked to the exact THB amount from Step 2 with a 15-minute monospace countdown timer, Save QR button, and a **Slip Upload** dropzone (or automatic webhook listener mode).
+- **Step 4: Confirm**
+  - Clean review panel showing Channel, Target Amount, and Voucher Link / Uploaded Slip preview, plus anti-bot verification and a primary **Confirm Top-Up** button.
+  - **Guaranteed Credit Backend Logic:**
+    - Check `UNIQUE` constraint on `external_ref` (voucher hash or slip `transRef`) so no voucher or slip can ever be reused.
+    - Insert a `PENDING` transaction *before* calling external APIs (shop owner's TrueMoney phone / PromptPay ID / Slip API key stored strictly in server `.env`, never exposed to client).
+    - On verified success, store currency in integer satang (`balance_satang`), atomically credit the user's wallet, write to `wallet_ledger` (`balanceBefore` -> `balanceAfter`), write to `activity_logs`, and advance to Step 5.
+    - On network timeout, mark as `NEEDS_REVIEW` and return a clear Tracking ID so an admin can verify and credit immediately—ensuring no user loses money.
+- **Step 5: Done**
+  - Confirmation glass receipt card displaying Status (`Completed` or `Needs Review`), Reference ID, Channel, Exact Amount Credited (`+XXX.XX ฿`), Updated Wallet Balance, and action buttons: **Go to Shop** and **View Profile History**.
+
+### 7. Profile Dashboard (`/profile`) — Bento Overview, Balance, Purchase History & Activity History
+Design `/profile` as a unified Bento Glass account hub:
+- **Top Bento Grid (Wallet & Account Overview):**
+  - **Main Tile:** Username, Email, Account Created Date, **Current Wallet Balance (THB)** (always fetched from `/api/user/balance`, never trusted from `localStorage`), and a prominent **Top Up** button.
+  - **Stat Tiles:** **Total Topped Up (`฿`)**, **Total Spent (`฿`)**, and **Security Status** (Active Sessions count).
+- **Tab 1: Purchase History (`/profile?tab=purchases`)**
+  - Paginated glass table/card list with status filters (`All`, `Pending Delivery`, `Delivered`, `Refunded`).
+  - Displays: Order ID (one-click copy), Product Name & Image, Quantity & Total Paid (`฿`), Submitted Roblox Username, Status Badge, Admin Delivery Note, and Exact Timestamp (`Asia/Bangkok`).
+- **Tab 2: Activity History (`/profile?tab=activity`)**
+  - Unified timeline of Wallet Movements and Security Events with filters (`All`, `Top-Ups`, `Purchases`, `Security & Logins`).
+  - Displays: Event Type (`Sign In`, `Failed Login`, `Password Changed`, `Voucher Top-Up`, `QR Top-Up`, `Item Purchase`, `Refund Credited`, `Logged Out All Devices`), Financial Delta & Balance Snapshot (`+50.00 ฿`, `Balance Before -> After`), Device/Browser + Masked IP Address, Status Badge, and Timestamp (`Asia/Bangkok`).
+- **Tab 3: Account Security (`/profile?tab=security`)**
+  - Change Password form (requires current password + new password + confirm password).
+  - Active Sessions list with "Log Out All Other Devices" button.
+
+### 8. Shop Catalog, Checkout & Admin Panel
+- **Storefront (`/home` & `/shop`):** Glass Bento product grid for KING CAMERA SHOP items (seed `Upgraded Titan Cameraman` - `20 ฿`, `Upgraded Titan TV Man` - `30 ฿`) with specular hover borders, live stock counts, and category filters.
+- **Atomic Checkout:** Buyer enters their **Roblox Username**, server verifies balance and `stock > 0` inside a single locked transaction, deducts balance, decrements stock, creates an `orders` record, and writes both `wallet_ledger` and `activity_logs` entries.
+- **Admin Dashboard (`role === 'ADMIN'`):**
+  - Manage products, prices, and stock.
+  - Fulfill orders (`Delivered` or `Refunded` with automatic atomic wallet refund).
+  - Review and reconcile `NEEDS_REVIEW` top-ups.
+  - Monitor global security/activity logs and ban/unban abusive accounts or IPs.
+
+### 9. Deliverables
+Provide:
+1. Complete PostgreSQL Prisma schema (`schema.prisma`) with `users` (no phone column), `sessions`, `products`, `orders`, `topup_transactions`, `wallet_ledger`, and `activity_logs` using `UNIQUE` constraints and integer `balanceSatang`.
+2. `.env.example` for database, auth secrets, shop owner TrueMoney phone (for voucher redemption only), PromptPay ID, Turnstile keys, and Slip/Payment Gateway API keys.
+3. Tailwind config & global CSS defining the Obsidian Glassmorphism, specular silver borders, noise overlay, and EN/TH font variables.
+4. Full translation files (`/locales/en.json` and `/locales/th.json`) and language switcher implementation.
+5. Full backend API routes with security middleware, rate limiting, atomic transactions, and TrueMoney Voucher + QR payment handlers.
+6. Full responsive frontend pages: Home/Shop, Sign In, Create Account, 5-Step Top-Up Wizard, Bento Profile Dashboard (Balance, Purchase History, Activity History, Security), and Admin Dashboard.
+7. Clear setup and deployment instructions.
